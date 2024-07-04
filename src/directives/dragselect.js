@@ -1,10 +1,10 @@
 import { nextTick } from "vue";
 export default {
   mounted(el, binding) {
-    let isSelecting = false;
-    let selectionSquare = null;
-    let initialX = null;
-    let initialY = null;
+    let isSelecting = false; // if the selection has started
+    let selectionSquare = null; // holds the selection sqaure element
+    let initialX = null; // the initial mouse click - x
+    let initialY = null; // the initial mouse click - y
     let selectableElements = [];
 
     const updateselectableElements = () => {
@@ -12,9 +12,8 @@ export default {
         selectableElements = el.querySelectorAll(".selectable"); // add "selectable" class to the items that needs selection
       });
     };
-
     updateselectableElements();
-
+    
     const getSelectedItems = binding.value.getSelectedItems;
 
     const checkSelectedItem = (selectedArea) => {
@@ -28,19 +27,18 @@ export default {
           bottom: elBottom,
         } = selectable.getBoundingClientRect();
         if (
-          elRight > left &&
-          elBottom > top &&
-          elLeft < right &&
-          elTop < bottom
+          elRight > left && //right edge of ele lies on right side of selection area's left edge
+          elBottom > top && //bottom edge of ele lies below the selection area's top edge
+          elLeft < right && //left edge of ele lies on left side of selection area's right edge
+          elTop < bottom //top edge of ele lies above the selection area's bottom edge
         ) {
-          const folderId = selectable.dataset.id;
+          const itemId = selectable.dataset.id;
           selectable.classList.add("selected");
-          if (folderId) {
-            selectedItems.push(folderId);
+          if (itemId) {
+            selectedItems.push(itemId);
           }
         } else {
           selectable.classList.remove("selected");
-          
         }
       });
       getSelectedItems(selectedItems);
@@ -59,7 +57,7 @@ export default {
 
     const handleMouseDown = (event) => {
         if(!isSelecting){
-            getSelectedItems([]);
+            getSelectedItems([]); //empty the previous selected items
         }
       isSelecting = true;
       initialX = event.pageX;
